@@ -12,9 +12,9 @@ public class FurnitureCreator : MonoBehaviour
     }    
     
     [System.Serializable]
-    struct ResourceElement
+    public struct ResourceElement
     {
-        public DragableBehaviour _prefab;
+        public DragableEditor _prefab;
         public int count;
         public int socketCount;
     }
@@ -26,9 +26,11 @@ public class FurnitureCreator : MonoBehaviour
     [SerializeField]    
     private RecipeElement[] recipeElements = Array.Empty<RecipeElement>();
 
+    public ResourceElement[] ResourceElements => resourceElements;
+
     private void Awake()
     {
-        List<DragableBehaviour>[] instances = InstantiatePrefabs();
+        /*List<DragableBehaviour>[] instances = InstantiatePrefabs();
         int[] order = PrepareOrderArray();
 
         for (var index = 0; index < recipeElements.Length; index++)
@@ -51,8 +53,9 @@ public class FurnitureCreator : MonoBehaviour
             }
             recipeElements[index]._connectedIds.Clear();
         }
+        */
     }
-
+/*
     private List<DragableBehaviour>[] InstantiatePrefabs()
     {
         List<DragableBehaviour>[] instances = new List<DragableBehaviour>[recipeElements.Length];
@@ -68,7 +71,7 @@ public class FurnitureCreator : MonoBehaviour
 
         return instances;
     }
-
+*/
     private int[] PrepareOrderArray()
     {
         int[] order = new int[recipeElements.Length];
