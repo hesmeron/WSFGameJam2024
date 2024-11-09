@@ -32,6 +32,8 @@ public class DragableBehaviour : MonoBehaviour
             Vector3 pos =  Vector3.Lerp(From(), To(), completion);
             Gizmos.DrawSphere(pos, _radius);
         }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(HookPosition(), 0.1f);
     }
 
     private void Awake()
@@ -81,7 +83,7 @@ public class DragableBehaviour : MonoBehaviour
 
     public void StartDragging(Vector3 hookPoint)
     {
-        _hookPoint = hookPoint - transform.position;
+        _hookPoint = transform.InverseTransformPoint(hookPoint);
         _isDragged = true;
     }
     public void StopDragging()
@@ -109,7 +111,7 @@ public class DragableBehaviour : MonoBehaviour
 
     public void Drag(Vector3 newAnchor)
     {
-        Vector3 dest = newAnchor - _hookPoint;
+        Vector3 dest = newAnchor - (HookPosition() - transform.position) ;
         transform.position = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
         foreach (Socket socket in _sockets)
         {
@@ -128,7 +130,7 @@ public class DragableBehaviour : MonoBehaviour
     }    
     private Vector3 HookPosition()
     {
-        return transform.position + _hookPoint;
+        return  transform.TransformPoint(_hookPoint);
     }
 
     private Vector3 Origin()

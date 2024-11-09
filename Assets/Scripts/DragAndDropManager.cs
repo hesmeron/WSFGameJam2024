@@ -14,7 +14,13 @@ public class DragAndDropManager : MonoBehaviour
     private bool _isDragged = false;
     [SerializeField]
     private DragableBehaviour _currentlyDragged;
-    
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawSphere(_planeAnchor, 0.1f);
+    }
+
     public void SetDragables(DragableBehaviour[] dragables)
     {
         _dragables = dragables;
@@ -87,8 +93,8 @@ public class DragAndDropManager : MonoBehaviour
                 _isDragged = true;
                 _currentlyDragged = closestDragableBehaviour;
                 closestDragableBehaviour.StartDragging(hit); 
-                Vector3 mouseScreenPos = Input.mousePosition;
-                Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+                //Vector3 mouseScreenPos = Input.mousePosition;
+                //Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
                 _planeAnchor = hit;
             }
         }
