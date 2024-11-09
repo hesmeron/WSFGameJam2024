@@ -13,6 +13,8 @@ public class DragableBehaviour : MonoBehaviour
     private Vector3 from;
     [SerializeField]
     private Vector3 to;
+    [SerializeField]
+    private float debugDist = 0f;
 
     private bool _isDragged = false;
 
@@ -42,6 +44,33 @@ public class DragableBehaviour : MonoBehaviour
     private void Awake()
     {
         FillSocketList();
+    }
+
+    private void Update()
+    {
+        bool _shouldFall = true;
+        foreach (Socket socket in _sockets)
+        {
+            if (socket.Occupied)
+            {
+                _shouldFall = false;
+                break;
+            }
+        }
+        if (!_isDragged)
+        {
+            Vector3 translation = -Vector3.up * Time.deltaTime;
+            Vector3 groundPosition = new Vector3(transform.position.x, 0, transform.position.y);
+            float floorHeight = 0f; //_radius / 2f;
+            float distance = CapsuleDistance(groundPosition, From(), To(), _radius);//
+            distance = (transform.position.y - floorHeight) - Mathf.Max(_radius*2f, Vector3.Distance(From(), To()));
+            debugDist = distance;
+            if (distance > 0.1f)
+            {
+                float magnitude = Mathf.Min(translation.magnitude, distance);
+                transform.position += translation.normalized * magnitude;
+            }
+        }
     }
 
     private void FillSocketList()

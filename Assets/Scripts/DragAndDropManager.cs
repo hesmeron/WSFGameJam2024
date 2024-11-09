@@ -38,10 +38,12 @@ public class DragAndDropManager : MonoBehaviour
     void Update()
     {
         HandleInput();
+
         if (_isDragged)
         {
             Vector3 mouseScreenPos = Input.mousePosition;
             Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+           
             if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up,
                     out Vector3 result))
             {

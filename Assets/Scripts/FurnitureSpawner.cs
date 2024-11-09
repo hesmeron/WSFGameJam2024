@@ -37,7 +37,8 @@ public class FurnitureSpawner : MonoBehaviour
 
     public void Judge()
     {
-        var recipeElements = _furnitureSo._recipeElements;
+        RecipeElement[] recipeElements = new RecipeElement[_furnitureSo._recipeElements.Length];
+        _furnitureSo._recipeElements.CopyTo(recipeElements, 0);
         maxPoints = 0;
 
         foreach (var element in recipeElements)
