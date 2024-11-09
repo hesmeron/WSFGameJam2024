@@ -134,7 +134,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a374a0f536fbbe40b19794b1d32b92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidbody: {fileID: 0}
   _prefabId: 0
   _sockets: []
   _radius: 1.39
@@ -186,7 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &1409748721091549591
 GameObject:
@@ -234,7 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &2029025841385867187
 GameObject:
@@ -282,7 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &2430393708946192773
 GameObject:
@@ -330,7 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &3697478762516598745
 GameObject:
@@ -378,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &3730672390715791740
 GameObject:
@@ -426,7 +425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &3801691701742222764
 GameObject:
@@ -474,7 +473,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &5315781627354578649
 GameObject:
@@ -522,7 +521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &5337386268543479723
 GameObject:
@@ -570,7 +569,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &6855916135473243933
 GameObject:
@@ -618,7 +617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &7195750965050179659
 GameObject:
@@ -666,7 +665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &8902406041022615478
 GameObject:
@@ -714,5 +713,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}

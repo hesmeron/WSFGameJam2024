@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabValue: 0
   _furnitureCreator: {fileID: 0}
-  _radius: 0.4
+  _radius: 0.2
   _dependent: {fileID: 0}
 --- !u!1 &7559418003976307728
 GameObject:
@@ -183,7 +183,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a374a0f536fbbe40b19794b1d32b92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rigidbody: {fileID: 0}
   _prefabId: 1
   _sockets: []
   _radius: 1

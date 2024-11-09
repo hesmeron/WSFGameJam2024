@@ -13,7 +13,10 @@ public class Socket : MonoBehaviour
     private Socket _joinedSocket;
     private DragableBehaviour _dragableBehaviour;
     private bool _occupied = false;
-    
+
+    public DragableBehaviour DragableBehaviour => _dragableBehaviour;
+    public Socket JoinedSocket => _joinedSocket;
+
     public bool IsOccupied(out int prefabValue)
     {
         prefabValue = _prefabValue;
