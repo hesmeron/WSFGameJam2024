@@ -12,7 +12,7 @@ public struct RecipeElement
 [System.Serializable]
 public struct ResourceElement
 {
-    public DragableEditor _prefab;
+    public DragableBehaviour _prefab;
     public int count;
     public int socketCount;
 }

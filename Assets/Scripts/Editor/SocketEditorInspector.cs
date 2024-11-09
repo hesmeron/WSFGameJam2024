@@ -2,21 +2,21 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(SocketEditor))]
+[CustomEditor(typeof(Socket))]
 public class SocketEditorInspector :Editor
 {
     
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        SocketEditor socektEditor = target as SocketEditor;
+        Socket socket = target as Socket;
         if (GUILayout.Button("Fill"))
         {
-            socektEditor.Fill();
+            socket.Fill();
         }        
         if (GUILayout.Button("Rotate"))
         {
-            socektEditor.Fill();
+            socket.Fill();
         }
     }
 }

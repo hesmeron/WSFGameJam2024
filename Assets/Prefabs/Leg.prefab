@@ -97,7 +97,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7598274266231066018}
   - component: {fileID: 9045135946485490275}
-  - component: {fileID: 2385523247846850973}
   m_Layer: 30
   m_Name: Socket (12)
   m_TagString: Untagged
@@ -133,23 +132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d447a6e380851ce449482dae65def611, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _normal: {x: 0, y: 0, z: 0}
-  _radius: 0.18
---- !u!114 &2385523247846850973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3226866923174256659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8e07856115420a4298dba512c414950, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _prefabValue: 0
-  _dependent: {fileID: 0}
   _furnitureCreator: {fileID: 0}
+  _radius: 0.4
+  _dependent: {fileID: 0}
 --- !u!1 &7559418003976307728
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,6 +146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2310237136695051448}
   - component: {fileID: 4802731492679971312}
+  - component: {fileID: 6275254654765668111}
   m_Layer: 0
   m_Name: Leg
   m_TagString: Untagged
@@ -193,11 +180,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 7559418003976307728}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 944fe886060fb274b94963ec70792fe2, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a374a0f536fbbe40b19794b1d32b92f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _socketEditors:
-  - {fileID: 2385523247846850973}
+  _rigidbody: {fileID: 0}
+  _prefabId: 1
+  _sockets: []
+  _radius: 1
+  from: {x: 0.57, y: 0, z: 0}
+  to: {x: -0.21, y: 0, z: 0}
+--- !u!64 &6275254654765668111
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7559418003976307728}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5512361600001258384, guid: 3a8c71ce620bd6c4fb5d9cdae54a130a, type: 3}
 --- !u!1 &8371556506248981461
 GameObject:
   m_ObjectHideFlags: 0

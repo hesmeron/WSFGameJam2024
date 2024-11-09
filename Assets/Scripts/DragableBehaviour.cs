@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DragableBehaviour : MonoBehaviour
 {
+    [SerializeField]
+    public int _prefabId;
     [SerializeField]
     private Socket[] _sockets = Array.Empty<Socket>();
     [SerializeField] 
@@ -23,7 +24,7 @@ public class DragableBehaviour : MonoBehaviour
     {
         int stepCount = 250;
         Gizmos.DrawLine(From(), To());
-        Gizmos.color = new Color(_isDragged ? 1:0,0, _isDragged ? 0:1, 20f/stepCount);
+        Gizmos.color = new Color(_isDragged ? 1:0,0, _isDragged ? 0:1, 2f/stepCount);
 
         for (int i = 0; i < stepCount; i++)
         {
@@ -35,10 +36,42 @@ public class DragableBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        foreach (Socket socket in Sockets)
+        FillSocketList();
+    }
+
+    private void FillSocketList()
+    {
+        _sockets = transform.GetComponentsInChildren<Socket>();
+        foreach (Socket socket in _sockets)
         {
             socket.Init(this);
         }
+    }
+    public void Init(int index)
+    {
+        _prefabId = index;
+    }
+
+    public void Snap(Socket target, int index = 0)
+    {
+        FillSocketList();
+        Transform socketTransform = _sockets[index].transform;
+        Quaternion destSocketRotation = Quaternion.LookRotation(-target.transform.forward, Vector3.up);
+        Quaternion destRotation = destSocketRotation * Quaternion.Inverse(socketTransform.localRotation);
+        transform.rotation = destRotation;
+        Vector3 translation = target.transform.position - socketTransform.position;
+        transform.position += translation;
+    }
+    
+    public void Snap(Socket target, Socket own)
+    {
+        FillSocketList();
+        Transform socketTransform = own.transform;
+        Quaternion destSocketRotation = Quaternion.LookRotation(-target.transform.forward, Vector3.up);
+        Quaternion destRotation = destSocketRotation * Quaternion.Inverse(socketTransform.localRotation);
+        transform.rotation = destRotation;
+        Vector3 translation = target.transform.position - socketTransform.position;
+        transform.position += translation;
     }
 
     public float Distance(Vector3 rayPos)
@@ -60,10 +93,11 @@ public class DragableBehaviour : MonoBehaviour
     {
         transform.position += translation;
     }   
-    public void SnapTranslate(Vector3 translation, Socket socket)
+    public void Snap(Vector3 translation, Quaternion rotation, Socket socket)
     {
         _sockets = transform.GetComponentsInChildren<Socket>();
         transform.position += translation;
+        transform.rotation = rotation;
         foreach (Socket otherSocket in _sockets)
         {
             if (otherSocket != socket)
@@ -85,12 +119,12 @@ public class DragableBehaviour : MonoBehaviour
 
     private Vector3 From()
     {
-        return transform.position + from;
+        return transform.TransformPoint(from);
     }  
     
     private Vector3 To()
     {
-        return transform.position + to;
+        return transform.TransformPoint(to);
     }    
     private Vector3 HookPosition()
     {
@@ -129,52 +163,4 @@ public class DragableBehaviour : MonoBehaviour
         p.y -= Mathf.Clamp( p.y, 0.0f, h );
         return p.magnitude - r;
     }
-    /*
-    private Vector3 ClosestMousePoint()
-    {
-        Vector3 mouseScreenPos = Input.mousePosition;
-
-        Vector3 mousePosition = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
-        Vector3 direction = (mousePosition - _mainCamera.transform.position).normalized;
-
-        int rayStep = 100;
-        float rayDistance = 100f;
-        Vector3 rayPos = mousePosition;
-        Vector3 closestPos = mousePosition;
-        float minDistance = rayDistance;
-        for (int i = 0; i < rayStep; i++)
-        {
-            float distance = CapsuleDistance(rayPos, From(), To(), _radius);
-            if (distance < minDistance)
-            {
-                closestPos = rayPos;
-            }
-            if (distance <= Single.Epsilon)
-            {
-                return closestPos;
-            }
-            if(rayDistance > Single.Epsilon)
-            {
-                float travel = Mathf.Min(distance, rayDistance);
-                rayDistance -= travel;
-                rayPos += direction * travel;
-            }
-            else
-            {
-                return closestPos;
-            }
-        }
-
-        return closestPos;
-    }
-
-    private Vector3 CameraDirection()
-    {
-        Vector3 mouseScreenPos = Input.mousePosition;
-
-        Vector3 mousePosition = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
-        Vector3 direction = (mousePosition - _mainCamera.transform.position).normalized;
-        return direction;
-    }
-    */
 }

@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public class DranAndDropManager : MonoBehaviour
+public class DragAndDropManager : MonoBehaviour
 {
     [SerializeField] 
     private DragableBehaviour[] _dragables = Array.Empty<DragableBehaviour>();
     
     private Camera _mainCamera;
     private Vector3 _planeAnchor;
+    [SerializeField]
     private bool _isDragged = false;
+    [SerializeField]
     private DragableBehaviour _currentlyDragged;
     
-    private void OnDrawGizmos()
+    public void SetDragables(DragableBehaviour[] dragables)
     {
-
+        _dragables = dragables;
     }
     
     public void Awake()
@@ -67,6 +69,7 @@ public class DranAndDropManager : MonoBehaviour
                             //join together
                             Socket.JoinSockets(draggedSocket, otherSocket);
                             StopDragging();
+                            break;
                         }
                     }
                 }

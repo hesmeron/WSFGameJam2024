@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FurnitureSpawner : MonoBehaviour
 {
+    [SerializeField] 
+    private DragAndDropManager _dragAndDropManager;
     [SerializeField] 
     private FurnitureSO _furnitureSo;
     [SerializeField] 
@@ -10,12 +13,17 @@ public class FurnitureSpawner : MonoBehaviour
     void Awake()
     {
         Debug.Log("Spawn!");
-        foreach (ResourceElement resourceElement in _furnitureSo._resourceElements)
+        List<DragableBehaviour> dragables = new List<DragableBehaviour>();
+        for (int index = 0; index < _furnitureSo._resourceElements.Length; index++)
         {
+            var resourceElement = _furnitureSo._resourceElements[index];
             for (int i = 0; i < resourceElement.count; i++)
             {
-                Instantiate(resourceElement._prefab);
+                dragables.Add(Instantiate(resourceElement._prefab, spawnPoint, Quaternion.identity));
+                spawnPoint += (Vector3.forward * 1.2f);
             }
         }
+        
+        _dragAndDropManager.SetDragables(dragables.ToArray());
     }
 }

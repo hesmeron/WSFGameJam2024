@@ -21,16 +21,16 @@ public class FurnitureCreator : MonoBehaviour
             resourceElements[index].count = 0;
         }
 
-        DragableEditor[] editors = FindObjectsByType<DragableEditor>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        Debug.Log("Editors count " +editors.Length);
-        recipeElements = new RecipeElement[editors.Length];
-        for (var index = 0; index < editors.Length; index++)
+        DragableBehaviour[] dragables = FindObjectsByType<DragableBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        Debug.Log("Editors count " +dragables.Length);
+        recipeElements = new RecipeElement[dragables.Length];
+        for (var index = 0; index < dragables.Length; index++)
         {
-            var editor = editors[index];
+            var editor = dragables[index];
             List<int> connections = new List<int>();
-            foreach (SocketEditor socketEditor in editor.SocketEditors)
+            foreach (Socket socket in editor.Sockets)
             {
-                if (socketEditor.IsOccupied(out int prefabValue))
+                if (socket.IsOccupied(out int prefabValue))
                 {
                     connections.Add(prefabValue);
                 }

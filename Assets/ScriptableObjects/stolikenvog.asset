@@ -23,11 +23,11 @@ MonoBehaviour:
   _recipeElements:
   - _elementID: 1
     _connectedIds: 
+  - _elementID: 1
+    _connectedIds: 
+  - _elementID: 1
+    _connectedIds: 
+  - _elementID: 1
+    _connectedIds: 
   - _elementID: 0
     _connectedIds: 01000000010000000100000001000000
-  - _elementID: 1
-    _connectedIds: 
-  - _elementID: 1
-    _connectedIds: 
-  - _elementID: 1
-    _connectedIds: 
