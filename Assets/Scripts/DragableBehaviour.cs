@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DragableBehaviour : MonoBehaviour
@@ -14,6 +13,7 @@ public class DragableBehaviour : MonoBehaviour
     private Camera _mainCamera;
     [SerializeField]
     private Vector3 _hookPoint;
+    private Vector3 _planeAnchor;
 
     private bool _isDragged = false;
 
@@ -33,8 +33,8 @@ public class DragableBehaviour : MonoBehaviour
             Vector3 pos = transform.position + Vector3.Lerp(from, to, completion);
             Gizmos.DrawSphere(pos, _radius);
         }
-
-        Vector3 mousePos = GetMouseRelativePos();
+        Vector3 mouseScreenPos = Input.mousePosition;
+        Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));;
 
         if (DidMouseHit(out Vector3 hit))
         {
@@ -43,21 +43,32 @@ public class DragableBehaviour : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawLine(closestPos, hit);
         }
-        Gizmos.DrawSphere(mousePos, 0.1f);
-        
 
-        //Gizmos.DrawLine(closestPos, mousePos);
-        Gizmos.color = Color.yellow;
+        if (Trigonometry.PointIntersectsAPlane(hit, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
+        {
+            Debug.Log("DrawCube");
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawCube(result + new Vector3(0,52f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
+        }
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(_planeAnchor + new Vector3(0,52f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
         Gizmos.DrawSphere(HookPosition(), 0.1f);
-        Gizmos.DrawLine(HookPosition(), ClosestMousePoint());
-        Gizmos.DrawSphere(Origin(), 0.1f);
-/*
-        Debug.Log("Vec " + (to - from));
-        Vector3 perp = mousePos - Origin();//Trigonometry.Perpendicular(, Vector3.up);
-        Debug.Log(perp);
-        Gizmos.DrawLine(Origin(), Origin() + perp);
-        */
-
+        
+        if (_isDragged)
+        {
+            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, Vector3.zero, Vector3.up, out Vector3 result2))
+            {
+                Vector3 newAnchor = result2;
+                Vector3 translation = newAnchor - _planeAnchor;
+                _planeAnchor = newAnchor;
+                float magnitude = translation.magnitude * 10;
+                translation = translation.normalized * magnitude;
+ 
+                    Gizmos.DrawLine(HookPosition(), HookPosition() + translation);
+                
+                
+            }
+        }
     }
 
     void Update()
@@ -65,15 +76,19 @@ public class DragableBehaviour : MonoBehaviour
         HandleInput();
         if (_isDragged)
         {
-            Vector3 mousePositon = ClosestMousePoint();
-            Vector3 translation = mousePositon - HookPosition();
-            float magnitude = Mathf.Min(_radius / 2f, translation.magnitude);
-            translation = translation.normalized * magnitude;
-            if (translation.magnitude > 0.1)
+            Vector3 mouseScreenPos = Input.mousePosition;
+            Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));;
+            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
             {
-                transform.position = Vector3.Slerp(transform.position, transform.position + translation, 5 * Time.deltaTime);
+                Vector3 newAnchor = result;
+                Vector3 translation = newAnchor - _planeAnchor;
+                _planeAnchor = newAnchor;
+                if (translation.magnitude > 0.1)
+                {
+                    transform.position = transform.position + translation;
+                }
+                
             }
-
         }
     }
 
@@ -87,6 +102,12 @@ public class DragableBehaviour : MonoBehaviour
                 Trigonometry.GetCastPoint(From(), To(), hit, out Vector3 closestPos);
                 _isDragged = true;
                 _hookPoint = hit - transform.position; //closestPos - transform.position;
+                Vector3 mouseScreenPos = Input.mousePosition;
+                Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));;
+                if (Trigonometry.PointIntersectsAPlane(hit, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
+                {
+                    _planeAnchor = result;
+                }
             }
         }
 
@@ -114,15 +135,7 @@ public class DragableBehaviour : MonoBehaviour
     {
         return (From() + To()) / 2;
     }
-
-    private Vector3 GetMouseRelativePos()
-    {        
-        Vector3 mouseScreenPos = Input.mousePosition;
-
-        Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
-        Vector3 direction = Origin() - mousePos;
-        return mousePos;
-    }
+    
     float CapsuleDistance( Vector3 p, Vector3 a, Vector3 b, float r)
     {
         Vector3 pa = p - a;
@@ -144,14 +157,8 @@ public class DragableBehaviour : MonoBehaviour
         for (int i = 0; i < rayStep; i++)
         {
             float distance = CapsuleDistance(hitPoint, From(), To(), _radius); 
-            //Gizmos.color = new Color(1, 0, 0, 0.5f);
-            //Gizmos.DrawSphere(rayPos, distance);
-            //Gizmos.color = Color.red;
-           // Gizmos.DrawSphere(rayPos, 0.1f);
             if (distance <= Single.Epsilon)
             {
-                //Gizmos.color = Color.red;
-                //Gizmos.DrawCube(rayPos, Vector3.one * 0.1f);
                 return true;
             }
             if(rayDistance > Single.Epsilon)
@@ -211,5 +218,14 @@ public class DragableBehaviour : MonoBehaviour
         }
 
         return closestPos;
+    }
+
+    private Vector3 CameraDirection()
+    {
+        Vector3 mouseScreenPos = Input.mousePosition;
+
+        Vector3 mousePosition = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+        Vector3 direction = (mousePosition - _mainCamera.transform.position).normalized;
+        return direction;
     }
 }
