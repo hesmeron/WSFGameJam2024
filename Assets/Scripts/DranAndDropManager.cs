@@ -6,12 +6,13 @@ using UnityEngine;
 public class DranAndDropManager : MonoBehaviour
 {
     [SerializeField] 
-    private List<DragableBehaviour> _dragables = new List<DragableBehaviour>();
+    private DragableBehaviour[] _dragables = Array.Empty<DragableBehaviour>();
     
     private Camera _mainCamera;
     private Vector3 _planeAnchor;
     private bool _isDragged = false;
     private DragableBehaviour _currentlyDragged;
+    
     private void OnDrawGizmos()
     {
 
@@ -19,6 +20,7 @@ public class DranAndDropManager : MonoBehaviour
     
     public void Awake()
     {
+        _dragables = FindObjectsByType<DragableBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         if (!_mainCamera)
         {
             _mainCamera = Camera.main;
@@ -32,11 +34,42 @@ public class DranAndDropManager : MonoBehaviour
         {
             Vector3 mouseScreenPos = Input.mousePosition;
             Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
-            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up, out Vector3 result))
+            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up,
+                    out Vector3 result))
             {
                 Vector3 newAnchor = result;
                 _planeAnchor = newAnchor;
                 _currentlyDragged.Drag(newAnchor);
+            }
+            HandleSockets();
+        }
+        
+
+    }
+
+    private void HandleSockets()
+    {
+        foreach (Socket draggedSocket  in _currentlyDragged.Sockets)
+        {
+            if (!draggedSocket.Occupied)
+            {
+                foreach (DragableBehaviour dragableBehaviour in _dragables)
+                {
+                    if (dragableBehaviour == _currentlyDragged)
+                    {
+                        continue;
+                    }
+
+                    foreach (Socket otherSocket in dragableBehaviour.Sockets)
+                    {
+                        if (otherSocket.IsInRange(draggedSocket))
+                        {
+                            //join together
+                            Socket.JoinSockets(draggedSocket, otherSocket);
+                            StopDragging();
+                        }
+                    }
+                }
             }
         }
     }
@@ -54,16 +87,12 @@ public class DranAndDropManager : MonoBehaviour
                 Vector3 mouseScreenPos = Input.mousePosition;
                 Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
                 _planeAnchor = hit;
-                if (Trigonometry.PointIntersectsAPlane(hit, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
-                {
-
-                }
             }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            _isDragged = false;
+            StopDragging();
         }
     }
     
@@ -115,5 +144,14 @@ public class DranAndDropManager : MonoBehaviour
         }
 
         return minDistance;
+    }
+
+    private void StopDragging()
+    {
+        if (_isDragged)
+        {
+            _isDragged = false;
+            _currentlyDragged.StopDragging();
+        }
     }
 }

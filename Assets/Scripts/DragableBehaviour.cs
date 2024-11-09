@@ -1,32 +1,45 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DragableBehaviour : MonoBehaviour
 {
+    [SerializeField]
+    private Socket[] _sockets = Array.Empty<Socket>();
     [SerializeField] 
     private float _radius = 1f;
     [SerializeField] 
     private Vector3 from;
     [SerializeField]
     private Vector3 to;
-    
+
+    private bool _isDragged = false;
+
+    public Socket[] Sockets => _sockets;
+
     private Vector3 _hookPoint;
 
     private void OnDrawGizmos()
     {
         int stepCount = 250;
-        Gizmos.DrawLine(transform.position + from, transform.position + to);
-        Gizmos.color = new Color(0,0,1, 2f/stepCount);
+        Gizmos.DrawLine(From(), To());
+        Gizmos.color = new Color(_isDragged ? 1:0,0, _isDragged ? 0:1, 20f/stepCount);
 
         for (int i = 0; i < stepCount; i++)
         {
             float completion = i / (float)stepCount;
-            Vector3 pos = transform.position + Vector3.Lerp(from, to, completion);
+            Vector3 pos =  Vector3.Lerp(From(), To(), completion);
             Gizmos.DrawSphere(pos, _radius);
         }
     }
 
-
+    private void Awake()
+    {
+        foreach (Socket socket in Sockets)
+        {
+            socket.Init(this);
+        }
+    }
 
     public float Distance(Vector3 rayPos)
     {
@@ -36,12 +49,38 @@ public class DragableBehaviour : MonoBehaviour
     public void StartDragging(Vector3 hookPoint)
     {
         _hookPoint = hookPoint - transform.position;
+        _isDragged = true;
+    }
+    public void StopDragging()
+    {
+        _isDragged = false;
+    }
+
+    public void SnapTranslate(Vector3 translation)
+    {
+        transform.position += translation;
+    }   
+    public void SnapTranslate(Vector3 translation, Socket socket)
+    {
+        _sockets = transform.GetComponentsInChildren<Socket>();
+        transform.position += translation;
+        foreach (Socket otherSocket in _sockets)
+        {
+            if (otherSocket != socket)
+            {
+                otherSocket.TransferMomentum();
+            }
+        }
     }
 
     public void Drag(Vector3 newAnchor)
     {
         Vector3 dest = newAnchor - _hookPoint;
         transform.position = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
+        foreach (Socket socket in _sockets)
+        {
+            socket.TransferMomentum();
+        }
     }
 
     private Vector3 From()
@@ -69,6 +108,26 @@ public class DragableBehaviour : MonoBehaviour
         Vector3 ba = b - a;
         float h = Mathf.Clamp( Vector3.Dot(pa,ba)/Vector3.Dot(ba,ba), 0.0f, 1.0f );
         return ( pa - ba*h ).magnitude - r;
+        
+        /*
+        int stepCount = 250;
+
+        float minDistance = 100f;
+        for (int i = 0; i < stepCount; i++)
+        {
+            float completion = i / (float)stepCount;
+            Vector3 pos = transform.position + Vector3.Lerp(from, to, completion);
+            minDistance = Mathf.Min(minDistance, Vector3.Distance(p, pos));
+        }
+
+        return minDistance - r;
+        */
+    }
+    
+    float CapsuleDistance( Vector3 p, float h, float r )
+    {
+        p.y -= Mathf.Clamp( p.y, 0.0f, h );
+        return p.magnitude - r;
     }
     /*
     private Vector3 ClosestMousePoint()
