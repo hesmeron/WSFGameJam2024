@@ -23,7 +23,7 @@ public class DragableBehaviour : MonoBehaviour
         {
             _mainCamera = Camera.main;
         }
-        int stepCount = 25;
+        int stepCount = 250;
         Gizmos.DrawLine(transform.position + from, transform.position + to);
         Gizmos.color = new Color(0,0,1, 2f/stepCount);
 
@@ -36,24 +36,28 @@ public class DragableBehaviour : MonoBehaviour
 
         Vector3 mousePos = GetMouseRelativePos();
 
+        if (DidMouseHit(out Vector3 hit))
+        {
+            Debug.Log("Hit!");
+            Trigonometry.GetCastPoint(From(), To(), hit, out Vector3 closestPos);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(closestPos, hit);
+        }
         Gizmos.DrawSphere(mousePos, 0.1f);
         
-        Trigonometry.GetCastPoint(From(), To(), mousePos, out Vector3 closestPos);
-        if (Vector3.Distance(closestPos, mousePos) <= _radius)
-        {
-            Gizmos.color = Color.red;
-        }
-        else
-        {
-            Gizmos.color = Color.green;
-        }
-        Gizmos.DrawLine(closestPos, mousePos);
-        Gizmos.color = Color.yellow;
-        //Gizmos.DrawSphere(HookPosition(), 0.1f);
-        Gizmos.DrawSphere(Origin(), 0.1f);
 
-        Vector3 perp = Trigonometry.Perpendicular(to - from, Vector3.up);
-        Gizmos.DrawLine(Origin(), Origin() + );
+        //Gizmos.DrawLine(closestPos, mousePos);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(HookPosition(), 0.1f);
+        Gizmos.DrawLine(HookPosition(), ClosestMousePoint());
+        Gizmos.DrawSphere(Origin(), 0.1f);
+/*
+        Debug.Log("Vec " + (to - from));
+        Vector3 perp = mousePos - Origin();//Trigonometry.Perpendicular(, Vector3.up);
+        Debug.Log(perp);
+        Gizmos.DrawLine(Origin(), Origin() + perp);
+        */
+
     }
 
     void Update()
@@ -61,9 +65,15 @@ public class DragableBehaviour : MonoBehaviour
         HandleInput();
         if (_isDragged)
         {
-            Vector3 mousePositon = GetMouseRelativePos();
+            Vector3 mousePositon = ClosestMousePoint();
             Vector3 translation = mousePositon - HookPosition();
-            transform.position = Vector3.Slerp(transform.position, transform.position + translation, 10 * Time.deltaTime);
+            float magnitude = Mathf.Min(_radius / 2f, translation.magnitude);
+            translation = translation.normalized * magnitude;
+            if (translation.magnitude > 0.1)
+            {
+                transform.position = Vector3.Slerp(transform.position, transform.position + translation, 5 * Time.deltaTime);
+            }
+
         }
     }
 
@@ -71,12 +81,12 @@ public class DragableBehaviour : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
-            Vector3 mousePos = GetMouseRelativePos();
-            Trigonometry.GetCastPoint(From(), To(), mousePos, out Vector3 closestPos);
-            if (Vector3.Distance(closestPos, mousePos) <= _radius)
+            if (DidMouseHit(out Vector3 hit))
             {
+                Debug.Log("Hit!");
+                Trigonometry.GetCastPoint(From(), To(), hit, out Vector3 closestPos);
                 _isDragged = true;
-                _hookPoint = closestPos - transform.position;
+                _hookPoint = hit - transform.position; //closestPos - transform.position;
             }
         }
 
@@ -105,18 +115,101 @@ public class DragableBehaviour : MonoBehaviour
         return (From() + To()) / 2;
     }
 
-    /*
-    private Vector3 Normal()
-    {
-        return Vector3.pTo() - From()
-    }
-    */
-
     private Vector3 GetMouseRelativePos()
     {        
         Vector3 mouseScreenPos = Input.mousePosition;
-        float distance = transform.position.z - _mainCamera.transform.position.z;
+
         Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+        Vector3 direction = Origin() - mousePos;
         return mousePos;
+    }
+    float CapsuleDistance( Vector3 p, Vector3 a, Vector3 b, float r)
+    {
+        Vector3 pa = p - a;
+        Vector3 ba = b - a;
+        float h = Mathf.Clamp( Vector3.Dot(pa,ba)/Vector3.Dot(ba,ba), 0.0f, 1.0f );
+        return ( pa - ba*h ).magnitude - r;
+    }
+
+    private bool DidMouseHit(out Vector3 hitPoint)
+    {
+        Vector3 mouseScreenPos = Input.mousePosition;
+
+        Vector3 mousePosition = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+        Vector3 direction = (mousePosition - _mainCamera.transform.position).normalized;
+
+        int rayStep = 100;
+        float rayDistance = 100f;
+        hitPoint = mousePosition;
+        for (int i = 0; i < rayStep; i++)
+        {
+            float distance = CapsuleDistance(hitPoint, From(), To(), _radius); 
+            //Gizmos.color = new Color(1, 0, 0, 0.5f);
+            //Gizmos.DrawSphere(rayPos, distance);
+            //Gizmos.color = Color.red;
+           // Gizmos.DrawSphere(rayPos, 0.1f);
+            if (distance <= Single.Epsilon)
+            {
+                //Gizmos.color = Color.red;
+                //Gizmos.DrawCube(rayPos, Vector3.one * 0.1f);
+                return true;
+            }
+            if(rayDistance > Single.Epsilon)
+            {
+                float travel = Mathf.Min(distance, rayDistance);
+                rayDistance -= travel;
+                hitPoint += direction * travel;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }   
+    
+    private Vector3 ClosestMousePoint()
+    {
+        Vector3 mouseScreenPos = Input.mousePosition;
+
+        Vector3 mousePosition = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+        Vector3 direction = (mousePosition - _mainCamera.transform.position).normalized;
+
+        int rayStep = 100;
+        float rayDistance = 100f;
+        Vector3 rayPos = mousePosition;
+        Vector3 closestPos = mousePosition;
+        float minDistance = rayDistance;
+        for (int i = 0; i < rayStep; i++)
+        {
+            float distance = CapsuleDistance(rayPos, From(), To(), _radius);
+            if (distance < minDistance)
+            {
+                closestPos = rayPos;
+            }
+            //Gizmos.color = new Color(1, 0, 0, 0.5f);
+            //Gizmos.DrawSphere(rayPos, distance);
+            //Gizmos.color = Color.red;
+           // Gizmos.DrawSphere(rayPos, 0.1f);
+            if (distance <= Single.Epsilon)
+            {
+                //Gizmos.color = Color.red;
+                //Gizmos.DrawCube(rayPos, Vector3.one * 0.1f);
+                return closestPos;
+            }
+            if(rayDistance > Single.Epsilon)
+            {
+                float travel = Mathf.Min(distance, rayDistance);
+                rayDistance -= travel;
+                rayPos += direction * travel;
+            }
+            else
+            {
+                return closestPos;
+            }
+        }
+
+        return closestPos;
     }
 }
