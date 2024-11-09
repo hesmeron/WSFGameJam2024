@@ -18,7 +18,9 @@ public class FurnitureCreator : MonoBehaviour
         public int count;
         public int socketCount;
     }
-    
+
+    [SerializeField] 
+    private DragableBehaviour _dragableBehaviour;
     [SerializeField] 
     private ResourceElement[] resourceElements = Array.Empty<ResourceElement>();
     [SerializeField]    
