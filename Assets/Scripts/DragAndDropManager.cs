@@ -135,7 +135,7 @@ public class DragAndDropManager : MonoBehaviour
             }
         }
 
-        return false;
+        return true;
     }
 
     private float MinDistance(Vector3 point, out DragableBehaviour closestDragableBehaviour)

@@ -185,9 +185,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefabId: 1
   _sockets: []
-  _radius: 1
-  from: {x: 0.57, y: 0, z: 0}
-  to: {x: -0.21, y: 0, z: 0}
+  _radius: 0.46
+  from: {x: 1.29, y: 0, z: 0}
+  to: {x: -0.95, y: 0, z: 0}
 --- !u!64 &6275254654765668111
 MeshCollider:
   m_ObjectHideFlags: 0

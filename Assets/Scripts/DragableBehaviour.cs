@@ -165,4 +165,19 @@ public class DragableBehaviour : MonoBehaviour
         p.y -= Mathf.Clamp( p.y, 0.0f, h );
         return p.magnitude - r;
     }
+/*
+    float CubeDistance(Vector3 point, Vector3 center, Vector3 extent)
+    {
+        float xd = Mathf.Abs(point.x - center.x) - extent.x;
+        float yd = Mathf.Abs(point.y - center.y) - extent.y;
+        float zd = Mathf.Abs(point.z - center.z) - extent.z;
+        return 
+    }
+    */
+    float sdBox( Vector3 point, Vector3 center, Vector3 extent )
+    {
+        //vec3 q = abs(p) - b;
+        //return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+        return 0;
+    }
 }
