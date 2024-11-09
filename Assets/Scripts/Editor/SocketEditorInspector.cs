@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(SocketEditor))]
-public class SocektEditorInspector :Editor
+public class SocketEditorInspector :Editor
 {
     
     public override void OnInspectorGUI()
