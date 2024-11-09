@@ -44,29 +44,26 @@ public class DragableBehaviour : MonoBehaviour
             Gizmos.DrawLine(closestPos, hit);
         }
 
-        if (Trigonometry.PointIntersectsAPlane(hit, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
+        if (Trigonometry.PointIntersectsAPlane(hit, mousePos, _planeAnchor, Vector3.up, out Vector3 result))
         {
             Debug.Log("DrawCube");
             Gizmos.color = Color.cyan;
-            Gizmos.DrawCube(result + new Vector3(0,52f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
+            Gizmos.DrawCube(result + new Vector3(0,50f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
         }
         Gizmos.color = Color.blue;
-        Gizmos.DrawCube(_planeAnchor + new Vector3(0,52f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
+        Gizmos.DrawCube(_planeAnchor + new Vector3(0,50f,0), new Vector3(0.1f, 100f, 0.1f) * 1f);
         Gizmos.DrawSphere(HookPosition(), 0.1f);
         
         if (_isDragged)
         {
-            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, Vector3.zero, Vector3.up, out Vector3 result2))
+            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up, out Vector3 result2))
             {
+                Gizmos.color = Color.green;
                 Vector3 newAnchor = result2;
                 Vector3 translation = newAnchor - _planeAnchor;
-                _planeAnchor = newAnchor;
                 float magnitude = translation.magnitude * 10;
                 translation = translation.normalized * magnitude;
- 
-                    Gizmos.DrawLine(HookPosition(), HookPosition() + translation);
-                
-                
+                Gizmos.DrawLine(HookPosition(), HookPosition() + translation);
             }
         }
     }
@@ -78,16 +75,17 @@ public class DragableBehaviour : MonoBehaviour
         {
             Vector3 mouseScreenPos = Input.mousePosition;
             Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));;
-            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
+            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up, out Vector3 result))
             {
                 Vector3 newAnchor = result;
                 Vector3 translation = newAnchor - _planeAnchor;
                 _planeAnchor = newAnchor;
-                if (translation.magnitude > 0.1)
-                {
-                    transform.position = transform.position + translation;
-                }
-                
+                Vector3 dest = newAnchor - _hookPoint;
+  
+                    //transform.position = transform.position + translation;
+                    transform.position = Vector3.Slerp(transform.position, dest, 5f * Time.deltaTime);
+
+
             }
         }
     }
@@ -103,10 +101,11 @@ public class DragableBehaviour : MonoBehaviour
                 _isDragged = true;
                 _hookPoint = hit - transform.position; //closestPos - transform.position;
                 Vector3 mouseScreenPos = Input.mousePosition;
-                Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));;
+                Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
+                _planeAnchor = hit;
                 if (Trigonometry.PointIntersectsAPlane(hit, mousePos, Vector3.zero, Vector3.up, out Vector3 result))
                 {
-                    _planeAnchor = result;
+
                 }
             }
         }
