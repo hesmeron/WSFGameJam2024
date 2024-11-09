@@ -19,6 +19,7 @@ public class DragableBehaviour : MonoBehaviour
     public Socket[] Sockets => _sockets;
 
     private Vector3 _hookPoint;
+    private Vector3 _castPoint;
 
     private void OnDrawGizmos()
     {
@@ -33,7 +34,9 @@ public class DragableBehaviour : MonoBehaviour
             Gizmos.DrawSphere(pos, _radius);
         }
         Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(HookPosition(), 0.1f);
+        Gizmos.DrawSphere(HookPosition(), 0.1f);   
+        Gizmos.color = Color.black;
+        Gizmos.DrawSphere(CastPoint(), 0.5f);
     }
 
     private void Awake()
@@ -84,6 +87,9 @@ public class DragableBehaviour : MonoBehaviour
     public void StartDragging(Vector3 hookPoint)
     {
         _hookPoint = transform.InverseTransformPoint(hookPoint);
+        Trigonometry.GetCastPoint(From(), To(), HookPosition(), out Vector3 result);
+        _castPoint = transform.InverseTransformPoint(result);
+        float distance = Vector3.Distance(Origin(), _castPoint);
         _isDragged = true;
     }
     public void StopDragging()
@@ -111,7 +117,17 @@ public class DragableBehaviour : MonoBehaviour
 
     public void Drag(Vector3 newAnchor)
     {
-        Vector3 dest = newAnchor - (HookPosition() - transform.position) ;
+        Quaternion fromToRot = Quaternion.FromToRotation(HookPosition() - Origin(), newAnchor - Origin());
+        Quaternion targetRotation = fromToRot * transform.rotation;
+        float dist = Mathf.Clamp(Vector3.Distance(_castPoint, (from + to)/2f) -0.5f, 0, 1);
+        Debug.Log("Dist " +dist);
+        float rotationMagnitude = 12 * Time.deltaTime * dist;
+       transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationMagnitude);
+       //transform.rotation = t;
+        Vector3 dest = newAnchor - (HookPosition() - transform.position);
+        float rotationCoeff = 0.5f;
+
+        
         transform.position = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
         foreach (Socket socket in _sockets)
         {
@@ -131,6 +147,11 @@ public class DragableBehaviour : MonoBehaviour
     private Vector3 HookPosition()
     {
         return  transform.TransformPoint(_hookPoint);
+    }    
+    
+    private Vector3 CastPoint()
+    {
+        return  transform.TransformPoint(_castPoint);
     }
 
     private Vector3 Origin()
@@ -178,6 +199,6 @@ public class DragableBehaviour : MonoBehaviour
     {
         //vec3 q = abs(p) - b;
         //return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
-        return 0;
+        return 0;               
     }
 }
