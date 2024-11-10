@@ -14,6 +14,7 @@ public class Socket : MonoBehaviour
     private DragableBehaviour _dragableBehaviour;
     private bool _occupied = false;
 
+    private FixedJoint _joint;
     public DragableBehaviour DragableBehaviour => _dragableBehaviour;
     public Socket JoinedSocket => _joinedSocket;
 
@@ -24,7 +25,12 @@ public class Socket : MonoBehaviour
     }
 
     public bool Occupied => _occupied;
-    
+
+    private void Awake()
+    {
+        //_joint = transform.parent.gameObject.AddComponent<FixedJoint>();
+    }
+
     public void Fill()
     {
         if (_dependent)
@@ -73,6 +79,8 @@ public class Socket : MonoBehaviour
 
     public void JoinSocket(Socket socket)
     {
+        _joint = transform.parent.gameObject.AddComponent<FixedJoint>();
+        _joint.connectedBody = socket.DragableBehaviour.Rigidbody;
         _occupied = true;
         _joinedSocket = socket;
     }   
@@ -100,8 +108,7 @@ public class Socket : MonoBehaviour
     public void Snap(Socket other)
     {
         _dragableBehaviour.Snap(other, this);
-        _occupied = true;
-        _joinedSocket = other;
+        JoinSocket(other);
     }
 
     public static void JoinSockets(Socket adjustable, Socket b)
