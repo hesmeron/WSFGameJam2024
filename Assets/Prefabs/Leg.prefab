@@ -190,7 +190,6 @@ MonoBehaviour:
   from: {x: 1.29, y: 0, z: 0}
   to: {x: -0.95, y: 0, z: 0}
   debugDist: 0
-  _rigidbody: {fileID: -3506874642951145051}
 --- !u!64 &6275254654765668111
 MeshCollider:
   m_ObjectHideFlags: 0

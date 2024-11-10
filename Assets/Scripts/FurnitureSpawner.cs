@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FurnitureSpawner : MonoBehaviour
 {
@@ -23,9 +24,13 @@ public class FurnitureSpawner : MonoBehaviour
     int maxPoints = 0;
     [SerializeField]
     private float _transitionTime = 3f;
+    [SerializeField]
+    private Button _finishWorkButton;
 
     [SerializeField] 
-    private GameObject _jumpScare;
+    private GameObject _jumpScare;   
+    [SerializeField] 
+    private Image _endPanel;
     [SerializeField] 
     private MeshRenderer _characterRenderer;
     [SerializeField] 
@@ -65,10 +70,11 @@ public class FurnitureSpawner : MonoBehaviour
                     var instance = Instantiate(resourceElement._prefab, transform.position, Quaternion.identity);
                     instance.Init(index);
                     dragables.Add(instance);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.2f);
                 }
             }
             _dragAndDropManager.SetDragables(dragables.ToArray());
+            _finishWorkButton.gameObject.SetActive(true);
             StartCoroutine(CameraTransition(1));
         }
 
@@ -87,7 +93,7 @@ public class FurnitureSpawner : MonoBehaviour
             _camera.transform.rotation =
                 Quaternion.Slerp(_camera.transform.rotation, target.transform.rotation, completion);
         }
-
+        _finishWorkButton.gameObject.SetActive(index != 0);
         if (index == 0)
         {
             StartCoroutine(CutsceneAndReturn());
@@ -132,6 +138,10 @@ public class FurnitureSpawner : MonoBehaviour
             _jumpScare.SetActive(true);
         }
         StartCoroutine(CameraTransition(0));
+        if (furnitureIndex == _furnitureList.Count)
+        {
+            _endPanel.gameObject.SetActive(true);
+        }
     }
 
     public void MoveToWork()

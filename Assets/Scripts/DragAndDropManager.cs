@@ -1,8 +1,14 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DragAndDropManager : MonoBehaviour
 {
+    [SerializeField] 
+    private AudioSource _source;    
+    [SerializeField] 
+    private AudioClip[] _clips;
+    
     private DragableBehaviour[] _dragables = Array.Empty<DragableBehaviour>();
     private Camera _mainCamera;
     private Vector3 _planeAnchor;
@@ -120,6 +126,7 @@ public class DragAndDropManager : MonoBehaviour
                         if (otherSocket.IsInRange(draggedSocket))
                         {
                             //join together
+                            _source.PlayOneShot(_clips[Random.Range(0, _clips.Length)]);
                             Socket.JoinSockets(draggedSocket, otherSocket);
                             StopDragging();
                             break;
