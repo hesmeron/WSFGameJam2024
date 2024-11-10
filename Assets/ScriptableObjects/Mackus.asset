@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f02a7dd152bd7d54ebf3facea55845da, type: 3}
+  m_Name: Mackus
+  m_EditorClassIdentifier: 
+  Name: Mackus
+  _resourceElements:
+  - _prefab: {fileID: 4347600172098893393, guid: 9bca217d686547240b6e02a9406ba4ad, type: 3}
+    count: 1
+    socketCount: 0
+  - _prefab: {fileID: 3736419584122068772, guid: 696b6f11c991b0945903586047242c4a, type: 3}
+    count: 2
+    socketCount: 0
+  - _prefab: {fileID: 4957317437151034649, guid: 448246a9f3313834983c057e5f4360eb, type: 3}
+    count: 1
+    socketCount: 0
+  - _prefab: {fileID: 7138994822316470825, guid: 2376ac4c3f04a0545aba9986efdb12f1, type: 3}
+    count: 1
+    socketCount: 0
+  _recipeElements:
+  - _elementID: 0
+    _connectedIds: 
+  - _elementID: 3
+    _connectedIds: 
+  - _elementID: 1
+    _connectedIds: 
+  - _elementID: 2
+    _connectedIds: 
+  - _elementID: 1
+    _connectedIds: 

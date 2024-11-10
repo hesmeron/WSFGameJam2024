@@ -992,7 +992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dragAndDropManager: {fileID: 856140201}
-  _furnitureSo: {fileID: 11400000, guid: 11c6ba0e5d487eb4eba07bac2da684ad, type: 2}
+  _furnitureSo: {fileID: 11400000, guid: a3d2bebbf6bc48c408da41d867a8943f, type: 2}
   spawnPoint: {x: 0, y: 5, z: 0}
   points: 0
   maxPoints: 0

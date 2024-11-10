@@ -132,11 +132,11 @@ public class DragableBehaviour : MonoBehaviour
         Quaternion fromToRot = Quaternion.FromToRotation(HookPosition() - Origin(), newAnchor - Origin());
         Quaternion targetRotation = fromToRot * transform.rotation;
         float dist = Mathf.Clamp(Vector3.Distance(_castPoint, (from + to)/2f) -0.5f, 0, 1);
-        dist = Vector3.Distance(_castPoint, (from + to) / 2f);
-        float rotationMagnitude = 12 * Time.fixedDeltaTime * dist;
+        //dist = Vector3.Distance(_castPoint, (from + to) / 2f);
+        float rotationMagnitude = 50 * Time.fixedDeltaTime * dist;
        Quaternion finalRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationMagnitude);
         Vector3 dest = newAnchor - (HookPosition() - transform.position);
-        dest = new Vector3(dest.x, Mathf.Max(dest.y, 0.5f), dest.z);
+        dest = new Vector3(dest.x, Mathf.Max(dest.y, 6.5f), dest.z);
         
         Vector3 finalDest = Vector3.Slerp(transform.position, dest, 12f * Time.fixedDeltaTime);
         _rigidbody.Move(finalDest, finalRotation);

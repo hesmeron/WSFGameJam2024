@@ -20,10 +20,10 @@ MonoBehaviour:
   - _prefab: {fileID: 4802731492679971312, guid: 35545b9481a880142ac616c7f54182e6, type: 3}
     count: 4
     socketCount: 1
-  - _prefab: {fileID: 0}
+  - _prefab: {fileID: 3504031038755740655, guid: 4afde713fa365b9439425919be3b30c5, type: 3}
     count: 1
     socketCount: 1
-  - _prefab: {fileID: 0}
+  - _prefab: {fileID: 3504031038755740655, guid: 4afde713fa365b9439425919be3b30c5, type: 3}
     count: 0
     socketCount: 1
   - _prefab: {fileID: 782862661431814440, guid: 4f4e66951e7b70645b008576602bf4ba, type: 3}

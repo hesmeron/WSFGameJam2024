@@ -3,16 +3,10 @@ using UnityEngine;
 
 public class DragAndDropManager : MonoBehaviour
 {
-    [SerializeField]
-    private Rigidbody _rigidbody;
-    [SerializeField] 
     private DragableBehaviour[] _dragables = Array.Empty<DragableBehaviour>();
-    
     private Camera _mainCamera;
     private Vector3 _planeAnchor;
-    [SerializeField]
     private bool _isDragged = false;
-    [SerializeField]
     private DragableBehaviour _currentlyDragged;
 
     private void OnDrawGizmos()

@@ -1,38 +1,80 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FurnitureSpawner : MonoBehaviour
-{
+{    
+    [SerializeField] 
+    private List<FurnitureSO> _furnitureList = new List<FurnitureSO>();
     [SerializeField] 
     private DragAndDropManager _dragAndDropManager;
     [SerializeField] 
     private FurnitureSO _furnitureSo;
     [SerializeField] 
-    private Vector3 spawnPoint;
-    [SerializeField] 
     private int points = 0;
     [SerializeField]
     int maxPoints = 0;
+    [SerializeField]
+    private float _transitionTime = 3f;
 
     private List<DragableBehaviour> dragables;
+    [SerializeField]
+    private Transform[] _cameraPoints;
+    private Camera _camera;
+
+    private int furnitureIndex = 0;
 
     void Awake()
     {
-        Debug.Log("Spawn!");
-        dragables = new List<DragableBehaviour>();
-        for (int index = 0; index < _furnitureSo._resourceElements.Length; index++)
+        _camera = Camera.main;
+        Transform target = _cameraPoints[0];
+        _camera.transform.position = target.transform.position;
+        _camera.transform.rotation = target.transform.rotation;
+        SpawnElements();
+    }
+
+    private void SpawnElements()
+    {
+        StartCoroutine(Coroutine(furnitureIndex));
+        IEnumerator Coroutine(int soIndex)
         {
-            var resourceElement = _furnitureSo._resourceElements[index];
-            for (int i = 0; i < resourceElement.count; i++)
+            dragables = new List<DragableBehaviour>();
+            _furnitureSo = _furnitureList[soIndex];
+            for (int index = 0; index < _furnitureSo._resourceElements.Length; index++)
             {
-                var instance = Instantiate(resourceElement._prefab, spawnPoint, Quaternion.identity);
-                instance.Init(index);
-                dragables.Add(instance);
-                spawnPoint += (Vector3.up * 1.2f);
+                var resourceElement = _furnitureSo._resourceElements[index];
+                for (int i = 0; i < resourceElement.count; i++)
+                {
+                    var instance = Instantiate(resourceElement._prefab, transform.position, Quaternion.identity);
+                    instance.Init(index);
+                    dragables.Add(instance);
+                    yield return new WaitForSeconds(0.5f);
+                }
             }
+            _dragAndDropManager.SetDragables(dragables.ToArray());
+            StartCoroutine(CameraTransition(1));
         }
-        
-        _dragAndDropManager.SetDragables(dragables.ToArray());
+
+    }
+
+    IEnumerator CameraTransition(int index)
+    {
+        Transform target = _cameraPoints[index];
+        float _timePassed = 0f;
+        while (_timePassed < _transitionTime)
+        {
+            _timePassed += Time.deltaTime;
+            yield return null;
+            float completion = _timePassed / _transitionTime;
+            _camera.transform.position = Vector3.Slerp(_camera.transform.position, target.transform.position, completion);
+            _camera.transform.rotation =
+                Quaternion.Slerp(_camera.transform.rotation, target.transform.rotation, completion);
+        }
+
+        if (index == 0)
+        {
+            StartCoroutine(CutsceneAndReturn());
+        }
     }
 
     public void Judge()
@@ -66,5 +108,24 @@ public class FurnitureSpawner : MonoBehaviour
                 }
             }
         }
+
+        furnitureIndex++;
+        StartCoroutine(CameraTransition(0));
+    }
+
+    public void MoveToWork()
+    {
+        StartCoroutine(CameraTransition(1));
+    }
+
+    IEnumerator CutsceneAndReturn()
+    {
+        foreach (DragableBehaviour dragableBehaviour in dragables)
+        {
+            Destroy(dragableBehaviour.gameObject);
+        }
+        dragables.Clear();
+        yield return new WaitForSeconds(3f);
+        SpawnElements();
     }
 }
