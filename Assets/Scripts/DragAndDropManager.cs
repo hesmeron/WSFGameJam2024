@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class DragAndDropManager : MonoBehaviour
 {
+    [SerializeField]
+    private Rigidbody _rigidbody;
     [SerializeField] 
     private DragableBehaviour[] _dragables = Array.Empty<DragableBehaviour>();
     
@@ -17,8 +19,21 @@ public class DragAndDropManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Vector3 mouseScreenPos = Input.mousePosition;
+        Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
         Gizmos.color = Color.white;
-        Gizmos.DrawSphere(_planeAnchor, 0.1f);
+        Gizmos.DrawCube(_planeAnchor, Vector3.one * 0.2f);
+        Gizmos.DrawLine(_planeAnchor, mousePos);
+        Vector3 dir = _planeAnchor - mousePos;
+        Vector3 a = -Trigonometry.Perpendicular(dir, Vector3.up);
+        Vector3 b = -Trigonometry.Perpendicular(dir, Vector3.right);
+        Vector3 c = -Trigonometry.Perpendicular(dir, Vector3.forward);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(_planeAnchor, _planeAnchor + a);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(_planeAnchor, _planeAnchor + b);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(_planeAnchor, _planeAnchor + c);
     }
 
     public void SetDragables(DragableBehaviour[] dragables)
@@ -43,18 +58,54 @@ public class DragAndDropManager : MonoBehaviour
         {
             Vector3 mouseScreenPos = Input.mousePosition;
             Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
-           
-            if (Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up,
-                    out Vector3 result))
+
+            Vector3 dir = _planeAnchor - mousePos;
+            Vector3 a = -Trigonometry.Perpendicular(dir, Vector3.up);
+            Vector3 b = -Trigonometry.Perpendicular(dir, Vector3.right);
+            Vector3 c = -Trigonometry.Perpendicular(dir, Vector3.forward);
+
+            Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.up,
+                out Vector3 resultZX);
+            Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.right,
+                out Vector3 resultZY);
+            Trigonometry.PointIntersectsAPlane(_mainCamera.transform.position, mousePos, _planeAnchor, Vector3.forward,
+                out Vector3 resultXY);
+            float distZX = Vector3.Distance(_planeAnchor, resultZX);
+            float distZY = Vector3.Distance(_planeAnchor, resultXY);
+            float distXY = Vector3.Distance(_planeAnchor, resultXY);
+            if (distZX < distZY)
             {
-                Vector3 newAnchor = result;
-                _planeAnchor = newAnchor;
-                _currentlyDragged.Drag(newAnchor);
+                if(distZX < distXY)
+                {
+                    DragTarget(resultZX);
+                }
+                else
+                {
+                    DragTarget(resultXY);
+                }
+            }
+            else
+            {
+                if(distZY < distXY)
+                {
+                    DragTarget(resultZY);
+                }
+                else
+                {
+                    DragTarget(resultXY);
+                }
             }
             HandleSockets();
         }
         
 
+    }
+    
+    private void DragTarget(Vector3 anchor)
+    {
+        Vector3 newAnchor = anchor;
+        _planeAnchor = newAnchor;
+        _currentlyDragged.Drag(newAnchor);
     }
 
     private void HandleSockets()

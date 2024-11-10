@@ -16,12 +16,17 @@ public class DragableBehaviour : MonoBehaviour
     [SerializeField]
     private float debugDist = 0f;
 
+    [SerializeField] private Rigidbody _rigidbody;
+
     private bool _isDragged = false;
 
     public Socket[] Sockets => _sockets;
 
     private Vector3 _hookPoint;
     private Vector3 _castPoint;
+    private bool _becameDependent = false;
+
+    public virtual Rigidbody Rigidbody => _rigidbody;
 
     private void OnDrawGizmos()
     {
@@ -48,16 +53,8 @@ public class DragableBehaviour : MonoBehaviour
 
     private void Update()
     {
-        bool _shouldFall = true;
-        foreach (Socket socket in _sockets)
-        {
-            if (socket.Occupied)
-            {
-                _shouldFall = false;
-                break;
-            }
-        }
-        if (!_isDragged)
+/*
+        if (!_isDragged && _shouldFall)
         {
             Vector3 translation = -Vector3.up * Time.deltaTime;
             Vector3 groundPosition = new Vector3(transform.position.x, 0, transform.position.y);
@@ -71,6 +68,7 @@ public class DragableBehaviour : MonoBehaviour
                 transform.position += translation.normalized * magnitude;
             }
         }
+        */
     }
 
     private void FillSocketList()
@@ -95,6 +93,7 @@ public class DragableBehaviour : MonoBehaviour
         transform.rotation = destRotation;
         Vector3 translation = target.transform.position - socketTransform.position;
         transform.position += translation;
+        DisablePhysiss(target);
     }
     
     public void Snap(Socket target, Socket own)
@@ -106,6 +105,15 @@ public class DragableBehaviour : MonoBehaviour
         transform.rotation = destRotation;
         Vector3 translation = target.transform.position - socketTransform.position;
         transform.position += translation;
+        DisablePhysiss(target);
+    }
+
+    private void DisablePhysiss(Socket target)
+    {
+        transform.SetParent(target.transform.parent);
+        _becameDependent = true;
+        Destroy(_rigidbody);
+        _rigidbody = target.DragableBehaviour.Rigidbody;
     }
 
     public float Distance(Vector3 rayPos)
@@ -115,14 +123,21 @@ public class DragableBehaviour : MonoBehaviour
 
     public void StartDragging(Vector3 hookPoint)
     {
+       // if (!_becameDependent)
+       // {
+            _rigidbody.useGravity = false;
+        //}
         _hookPoint = transform.InverseTransformPoint(hookPoint);
         Trigonometry.GetCastPoint(From(), To(), HookPosition(), out Vector3 result);
         _castPoint = transform.InverseTransformPoint(result);
-        float distance = Vector3.Distance(Origin(), _castPoint);
         _isDragged = true;
     }
     public void StopDragging()
     {
+       // if (!_becameDependent)
+        //{
+            _rigidbody.useGravity = true;
+       // }
         _isDragged = false;
     }
 
@@ -149,19 +164,22 @@ public class DragableBehaviour : MonoBehaviour
         Quaternion fromToRot = Quaternion.FromToRotation(HookPosition() - Origin(), newAnchor - Origin());
         Quaternion targetRotation = fromToRot * transform.rotation;
         float dist = Mathf.Clamp(Vector3.Distance(_castPoint, (from + to)/2f) -0.5f, 0, 1);
-        Debug.Log("Dist " +dist);
+        dist = Vector3.Distance(_castPoint, (from + to) / 2f);
         float rotationMagnitude = 12 * Time.deltaTime * dist;
-       transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationMagnitude);
-       //transform.rotation = t;
+       Quaternion finalRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationMagnitude);
         Vector3 dest = newAnchor - (HookPosition() - transform.position);
-        float rotationCoeff = 0.5f;
-
         
-        transform.position = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
-        foreach (Socket socket in _sockets)
+        Vector3 finalDest = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
+        if (_becameDependent)
         {
-            socket.TransferMomentum();
+            
+            _rigidbody.MovePosition(finalDest);
         }
+        else
+        {
+            _rigidbody.Move(finalDest, finalRotation);
+        }
+
     }
 
     private Vector3 From()
@@ -208,6 +226,21 @@ public class DragableBehaviour : MonoBehaviour
 
         return minDistance - r;
         */
+    }
+
+    private bool IsFree()
+    {
+        bool _shouldFall = true;
+        foreach (Socket socket in _sockets)
+        {
+            if (socket.Occupied)
+            {
+                _shouldFall = false;
+                break;
+            }
+        }
+
+        return _shouldFall;
     }
     
     float CapsuleDistance( Vector3 p, float h, float r )
