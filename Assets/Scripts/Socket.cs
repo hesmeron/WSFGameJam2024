@@ -26,11 +26,6 @@ public class Socket : MonoBehaviour
 
     public bool Occupied => _occupied;
 
-    private void Awake()
-    {
-        //_joint = transform.parent.gameObject.AddComponent<FixedJoint>();
-    }
-
     public void Fill()
     {
         if (_dependent)
@@ -70,11 +65,17 @@ public class Socket : MonoBehaviour
     
     public bool IsInRange(Socket socket)
     {
-        if (_occupied || Vector3.Angle(transform.forward, socket.transform.forward) < 89)
+        if (_occupied)
         {
             return false;
         }
-        return Vector3.Distance(socket.Pivot(), Pivot()) <= _radius + socket._radius;
+
+        if (Vector3.Angle(transform.forward, -socket.transform.forward) < 60)
+        {
+            return Vector3.Distance(socket.Pivot(), Pivot()) <= _radius + socket._radius;
+        }
+
+        return false;
     }
 
     public void JoinSocket(Socket socket)

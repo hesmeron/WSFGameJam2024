@@ -15,15 +15,14 @@ public class DragableBehaviour : MonoBehaviour
     private Vector3 to;
     [SerializeField]
     private float debugDist = 0f;
-    [SerializeField] 
+
     private Rigidbody _rigidbody;
-
     private bool _isDragged = false;
-
-    public Socket[] Sockets => _sockets;
-
     private Vector3 _hookPoint;
     private Vector3 _castPoint;
+    
+    public Socket[] Sockets => _sockets;
+
 
     public virtual Rigidbody Rigidbody => _rigidbody;
 
@@ -48,6 +47,13 @@ public class DragableBehaviour : MonoBehaviour
     private void Awake()
     {
         FillSocketList();
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void FixedUpdate()
+    {
+        //_rigidbody.angularVelocity = _rigidbody.angularVelocity.normalized * Mathf.Min(_rigidbody.angularVelocity.magnitude, 0.1f);
+        //_rigidbody.linearVelocity = _rigidbody.linearVelocity.normalized * Mathf.Min(_rigidbody.linearVelocity.magnitude, 0.1f);
     }
 
     private void FillSocketList()
@@ -93,8 +99,7 @@ public class DragableBehaviour : MonoBehaviour
 
     public void StartDragging(Vector3 hookPoint)
     {
-
-            _rigidbody.useGravity = false;
+        _rigidbody.useGravity = false;
         _hookPoint = transform.InverseTransformPoint(hookPoint);
         Trigonometry.GetCastPoint(From(), To(), HookPosition(), out Vector3 result);
         _castPoint = transform.InverseTransformPoint(result);
@@ -102,15 +107,12 @@ public class DragableBehaviour : MonoBehaviour
     }
     public void StopDragging()
     {
-
-            _rigidbody.useGravity = true;
+        _rigidbody.useGravity = true;
+        _rigidbody.angularVelocity = Vector3.zero;
+        _rigidbody.linearVelocity = Vector3.zero;
         _isDragged = false;
     }
-
-    public void SnapTranslate(Vector3 translation)
-    {
-        transform.position += translation;
-    }   
+    
     public void Snap(Vector3 translation, Quaternion rotation, Socket socket)
     {
         _sockets = transform.GetComponentsInChildren<Socket>();
@@ -131,13 +133,13 @@ public class DragableBehaviour : MonoBehaviour
         Quaternion targetRotation = fromToRot * transform.rotation;
         float dist = Mathf.Clamp(Vector3.Distance(_castPoint, (from + to)/2f) -0.5f, 0, 1);
         dist = Vector3.Distance(_castPoint, (from + to) / 2f);
-        float rotationMagnitude = 12 * Time.deltaTime * dist;
+        float rotationMagnitude = 12 * Time.fixedDeltaTime * dist;
        Quaternion finalRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationMagnitude);
         Vector3 dest = newAnchor - (HookPosition() - transform.position);
+        dest = new Vector3(dest.x, Mathf.Max(dest.y, 0.5f), dest.z);
         
-        Vector3 finalDest = Vector3.Slerp(transform.position, dest, 12f * Time.deltaTime);
+        Vector3 finalDest = Vector3.Slerp(transform.position, dest, 12f * Time.fixedDeltaTime);
         _rigidbody.Move(finalDest, finalRotation);
-
     }
 
     private Vector3 From()
@@ -170,55 +172,5 @@ public class DragableBehaviour : MonoBehaviour
         Vector3 ba = b - a;
         float h = Mathf.Clamp( Vector3.Dot(pa,ba)/Vector3.Dot(ba,ba), 0.0f, 1.0f );
         return ( pa - ba*h ).magnitude - r;
-        
-        /*
-        int stepCount = 250;
-
-        float minDistance = 100f;
-        for (int i = 0; i < stepCount; i++)
-        {
-            float completion = i / (float)stepCount;
-            Vector3 pos = transform.position + Vector3.Lerp(from, to, completion);
-            minDistance = Mathf.Min(minDistance, Vector3.Distance(p, pos));
-        }
-
-        return minDistance - r;
-        */
-    }
-
-    private bool IsFree()
-    {
-        bool _shouldFall = true;
-        foreach (Socket socket in _sockets)
-        {
-            if (socket.Occupied)
-            {
-                _shouldFall = false;
-                break;
-            }
-        }
-
-        return _shouldFall;
-    }
-    
-    float CapsuleDistance( Vector3 p, float h, float r )
-    {
-        p.y -= Mathf.Clamp( p.y, 0.0f, h );
-        return p.magnitude - r;
-    }
-/*
-    float CubeDistance(Vector3 point, Vector3 center, Vector3 extent)
-    {
-        float xd = Mathf.Abs(point.x - center.x) - extent.x;
-        float yd = Mathf.Abs(point.y - center.y) - extent.y;
-        float zd = Mathf.Abs(point.z - center.z) - extent.z;
-        return 
-    }
-    */
-    float sdBox( Vector3 point, Vector3 center, Vector3 extent )
-    {
-        //vec3 q = abs(p) - b;
-        //return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
-        return 0;               
     }
 }

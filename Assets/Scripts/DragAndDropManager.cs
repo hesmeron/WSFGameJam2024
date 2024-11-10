@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 
 public class DragAndDropManager : MonoBehaviour
@@ -53,7 +51,10 @@ public class DragAndDropManager : MonoBehaviour
     void Update()
     {
         HandleInput();
+    }
 
+    private void FixedUpdate()
+    {
         if (_isDragged)
         {
             Vector3 mouseScreenPos = Input.mousePosition;
@@ -97,10 +98,8 @@ public class DragAndDropManager : MonoBehaviour
             }
             HandleSockets();
         }
-        
-
     }
-    
+
     private void DragTarget(Vector3 anchor)
     {
         Vector3 newAnchor = anchor;

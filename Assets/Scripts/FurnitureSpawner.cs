@@ -28,7 +28,7 @@ public class FurnitureSpawner : MonoBehaviour
                 var instance = Instantiate(resourceElement._prefab, spawnPoint, Quaternion.identity);
                 instance.Init(index);
                 dragables.Add(instance);
-                spawnPoint += (Vector3.forward * 1.2f);
+                spawnPoint += (Vector3.up * 1.2f);
             }
         }
         
