@@ -11,6 +11,7 @@ public class DragAndDropManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        _mainCamera = Camera.main;
         Vector3 mouseScreenPos = Input.mousePosition;
         Vector3 mousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, 0.1f));
         Gizmos.color = Color.white;

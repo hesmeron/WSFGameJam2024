@@ -3,19 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FurnitureSpawner : MonoBehaviour
-{    
+{
+    [System.Serializable]
+    struct LevelData
+    {    
+        public AudioClip _musics;
+        public Material _material;
+        public FurnitureSO _furniture;
+    }
     [SerializeField] 
-    private List<FurnitureSO> _furnitureList = new List<FurnitureSO>();
+    private List<LevelData> _furnitureList = new List<LevelData>();
     [SerializeField] 
     private DragAndDropManager _dragAndDropManager;
     [SerializeField] 
-    private FurnitureSO _furnitureSo;
+    private LevelData levelData;
     [SerializeField] 
     private int points = 0;
     [SerializeField]
     int maxPoints = 0;
     [SerializeField]
     private float _transitionTime = 3f;
+
+    [SerializeField] 
+    private GameObject _jumpScare;
+    [SerializeField] 
+    private MeshRenderer _characterRenderer;
+    [SerializeField] 
+    private AudioSource _audioSource;
 
     private List<DragableBehaviour> dragables;
     [SerializeField]
@@ -39,10 +53,13 @@ public class FurnitureSpawner : MonoBehaviour
         IEnumerator Coroutine(int soIndex)
         {
             dragables = new List<DragableBehaviour>();
-            _furnitureSo = _furnitureList[soIndex];
-            for (int index = 0; index < _furnitureSo._resourceElements.Length; index++)
+            levelData = _furnitureList[soIndex];
+            _audioSource.clip = levelData._musics;
+            _characterRenderer.material = levelData._material;
+            _audioSource.Play();
+            for (int index = 0; index < levelData._furniture._resourceElements.Length; index++)
             {
-                var resourceElement = _furnitureSo._resourceElements[index];
+                var resourceElement = levelData._furniture._resourceElements[index];
                 for (int i = 0; i < resourceElement.count; i++)
                 {
                     var instance = Instantiate(resourceElement._prefab, transform.position, Quaternion.identity);
@@ -79,8 +96,8 @@ public class FurnitureSpawner : MonoBehaviour
 
     public void Judge()
     {
-        RecipeElement[] recipeElements = new RecipeElement[_furnitureSo._recipeElements.Length];
-        _furnitureSo._recipeElements.CopyTo(recipeElements, 0);
+        RecipeElement[] recipeElements = new RecipeElement[levelData._furniture._recipeElements.Length];
+        levelData._furniture._recipeElements.CopyTo(recipeElements, 0);
         maxPoints = 0;
 
         foreach (var element in recipeElements)
@@ -110,6 +127,10 @@ public class FurnitureSpawner : MonoBehaviour
         }
 
         furnitureIndex++;
+        if (furnitureIndex == _furnitureList.Count - 1)
+        {
+            _jumpScare.SetActive(true);
+        }
         StartCoroutine(CameraTransition(0));
     }
 
@@ -125,7 +146,7 @@ public class FurnitureSpawner : MonoBehaviour
             Destroy(dragableBehaviour.gameObject);
         }
         dragables.Clear();
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(0.3f);
         SpawnElements();
     }
 }

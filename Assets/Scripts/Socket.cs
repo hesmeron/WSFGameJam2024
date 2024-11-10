@@ -4,8 +4,10 @@ public class Socket : MonoBehaviour
 {
     [SerializeField] 
     private int _prefabValue;
+#if UNITY_EDITOR
     [SerializeField] 
     private FurnitureCreator _furnitureCreator;
+#endif
     [SerializeField] 
     private float _radius = 1f;
     [SerializeField] 
@@ -25,7 +27,7 @@ public class Socket : MonoBehaviour
     }
 
     public bool Occupied => _occupied;
-
+#if UNITY_EDITOR
     public void Fill()
     {
         if (_dependent)
@@ -43,6 +45,7 @@ public class Socket : MonoBehaviour
         _dependent.transform.position = transform.position;
         _dependent.Snap(this, 0);
     }
+    #endif
 
     private void OnDrawGizmos()
     {

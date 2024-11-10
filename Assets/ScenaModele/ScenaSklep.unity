@@ -380,6 +380,7 @@ GameObject:
   m_Component:
   - component: {fileID: 116815652}
   - component: {fileID: 116815651}
+  - component: {fileID: 116815653}
   m_Layer: 0
   m_Name: FurnitureSpawner
   m_TagString: Untagged
@@ -400,14 +401,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _furnitureList:
-  - {fileID: 11400000, guid: 11c6ba0e5d487eb4eba07bac2da684ad, type: 2}
-  - {fileID: 11400000, guid: 1694ea42380071348ae98dca9dc6d432, type: 2}
-  - {fileID: 11400000, guid: a3d2bebbf6bc48c408da41d867a8943f, type: 2}
+  - _musics: {fileID: 8300000, guid: a8f193c7ec7855c4d86ef8b226def9a1, type: 3}
+    _material: {fileID: 2100000, guid: 3bd2ab1eadfd8c143ac1e9fccb7b0507, type: 2}
+    _furniture: {fileID: 11400000, guid: 11c6ba0e5d487eb4eba07bac2da684ad, type: 2}
+  - _musics: {fileID: 8300000, guid: 616de02c3dfc30f4eb2b04bd1635e982, type: 3}
+    _material: {fileID: 2100000, guid: 62956d97370d07448be509a8308a2c36, type: 2}
+    _furniture: {fileID: 11400000, guid: 1694ea42380071348ae98dca9dc6d432, type: 2}
+  - _musics: {fileID: 8300000, guid: 1986082b3d42d4e4c8546dadbf55db4d, type: 3}
+    _material: {fileID: 2100000, guid: f7542b00547cc114b8c24bed93c17784, type: 2}
+    _furniture: {fileID: 11400000, guid: a3d2bebbf6bc48c408da41d867a8943f, type: 2}
   _dragAndDropManager: {fileID: 1523829100}
-  _furnitureSo: {fileID: 11400000, guid: 11c6ba0e5d487eb4eba07bac2da684ad, type: 2}
+  levelData:
+    _musics: {fileID: 0}
+    _material: {fileID: 0}
+    _furniture: {fileID: 0}
   points: 0
   maxPoints: 0
   _transitionTime: 3
+  _jumpScare: {fileID: 118787677}
+  _characterRenderer: {fileID: 1403174309}
+  _audioSource: {fileID: 116815653}
   _cameraPoints:
   - {fileID: 1828639550}
   - {fileID: 2122970333}
@@ -428,6 +441,108 @@ Transform:
   - {fileID: 2122970333}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &116815653
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116815650}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!1 &118787677 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d96d2a9be09bf564ea4f2724f8d9091a, type: 3}
+  m_PrefabInstance: {fileID: 1666664149}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &141966971 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d8668cffd8ef820458b7ede99756bcff, type: 3}
